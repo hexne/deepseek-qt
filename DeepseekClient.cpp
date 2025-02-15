@@ -1,0 +1,77 @@
+/*******************************************************************************
+ * @Author : yongheng
+ * @Data   : 2025/02/14 00:31
+*******************************************************************************/
+
+#include "DeepseekClient.h"
+#include <QNetworkRequest>
+#include <QUrl>
+#include <QFile>
+#include <QDebug>
+#include <iostream>
+
+DeepSeekClient::DeepSeekClient(QObject* parent) : QObject(parent) {
+    QFile file("./api_key.txt");
+
+    if (!file.open(QIODevice::ReadOnly))
+        throw std::runtime_error("Failed to open file");
+
+    api_key_ = file.readAll();
+
+    manager = new QNetworkAccessManager(this);
+    connect(manager, &QNetworkAccessManager::finished, this, &DeepSeekClient::onRequestFinished);
+}
+
+void DeepSeekClient::sendRequest(const QString& message) {
+    // 构造请求 URL
+    QUrl url("https://api.deepseek.com/chat/completions");
+
+    // 构造请求体
+    QJsonObject requestBody;
+    requestBody["model"] = "deepseek-chat";
+    QJsonArray messages;
+    QJsonObject messageObject;
+    messageObject["role"] = "user";
+    messageObject["content"] = message;
+    messages.append(messageObject);
+    requestBody["messages"] = messages;
+    requestBody["stream"] = false;
+
+    QJsonDocument doc(requestBody);
+    QByteArray data = doc.toJson();
+
+    // 构造请求
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setRawHeader("Authorization", ("Bearer " + api_key_).toUtf8());
+
+    // 发送 POST 请求
+    manager->post(request, data);
+}
+
+void DeepSeekClient::onRequestFinished(QNetworkReply* reply) {
+    if (reply->error() == QNetworkReply::NoError) {
+        // 读取响应数据
+        QByteArray responseData = reply->readAll();
+        QJsonDocument responseDoc = QJsonDocument::fromJson(responseData);
+
+        if (!responseDoc.isNull()) {
+            // 解析 JSON 响应
+            QJsonObject root = responseDoc.object();
+            QJsonArray choices = root["choices"].toArray();
+            if (!choices.isEmpty()) {
+                QJsonObject choice = choices[0].toObject();
+                QJsonObject message = choice["message"].toObject();
+                QString content = message["content"].toString();
+                emit get_message(content);
+                qDebug() << "Response Content:" << content;
+            }
+        } else {
+            qDebug() << "Failed to parse JSON response.";
+        }
+    } else {
+        qDebug() << "Error:" << reply->errorString();
+    }
+
+    reply->deleteLater();
+}
