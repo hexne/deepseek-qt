@@ -60,6 +60,12 @@ void DeepSeekClient::onRequestFinished(QNetworkReply* reply) {
                 QJsonObject choice = choices[0].toObject();
                 QJsonObject message = choice["message"].toObject();
                 QString content = message["content"].toString();
+
+                QJsonObject obj;
+                obj["role"] = "system";
+                obj["content"] = content;
+                json_array_.append(obj);
+
                 emit get_message(content);
                 qDebug() << "Response Content:" << content;
             }
