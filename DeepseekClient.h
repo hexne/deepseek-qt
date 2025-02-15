@@ -30,5 +30,6 @@ private slots:
 private:
     QString api_key_;
     QJsonDocument request_message_;
-    QNetworkAccessManager* manager;
+    QNetworkRequest request_;
+    QNetworkAccessManager* manager_;
 };

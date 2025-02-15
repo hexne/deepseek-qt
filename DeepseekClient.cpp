@@ -18,13 +18,17 @@ DeepSeekClient::DeepSeekClient(QObject* parent) : QObject(parent) {
 
     api_key_ = file.readAll();
 
-    manager = new QNetworkAccessManager(this);
-    connect(manager, &QNetworkAccessManager::finished, this, &DeepSeekClient::onRequestFinished);
+    QUrl url("https://api.deepseek.com/chat/completions");
+    request_.setUrl(url);
+    request_.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request_.setRawHeader("Authorization", ("Bearer " + api_key_).toUtf8());
+
+    manager_ = new QNetworkAccessManager(this);
+    connect(manager_, &QNetworkAccessManager::finished, this, &DeepSeekClient::onRequestFinished);
 }
 
 void DeepSeekClient::sendRequest(const QString& message) {
     // 构造请求 URL
-    QUrl url("https://api.deepseek.com/chat/completions");
 
     // 构造请求体
     QJsonObject requestBody;
@@ -40,13 +44,8 @@ void DeepSeekClient::sendRequest(const QString& message) {
     QJsonDocument doc(requestBody);
     QByteArray data = doc.toJson();
 
-    // 构造请求
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    request.setRawHeader("Authorization", ("Bearer " + api_key_).toUtf8());
-
     // 发送 POST 请求
-    manager->post(request, data);
+    manager_->post(request_, data);
 }
 
 void DeepSeekClient::onRequestFinished(QNetworkReply* reply) {
