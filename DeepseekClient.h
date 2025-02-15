@@ -18,7 +18,7 @@ class DeepSeekClient : public QObject {
 
 public:
     explicit DeepSeekClient(QObject* parent = nullptr);
-    void sendRequest(const QString& message);
+    void send(const QString& message);
 
 signals:
     void get_message(const QString& message);

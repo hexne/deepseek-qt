@@ -18,7 +18,8 @@ class MainWindow : public QWidget
     Q_OBJECT
 
 
-    DeepSeekClient client;
+    DeepSeekClient client_;
+    QString markdown_;
     Ui::MainWindow *ui;
 public:
     explicit MainWindow(QWidget *parent = nullptr);

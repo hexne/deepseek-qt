@@ -30,7 +30,7 @@ DeepSeekClient::DeepSeekClient(QObject* parent) : QObject(parent) {
     json_["stream"] = false;
 }
 
-void DeepSeekClient::sendRequest(const QString& message) {
+void DeepSeekClient::send(const QString& message) {
     QJsonObject obj;
     obj["role"] = "user";
     obj["content"] = message;
