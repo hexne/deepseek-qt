@@ -20,17 +20,12 @@ MainWindow::MainWindow(QWidget *parent)
         setWindowTitle("等待回复中...");
         ui->text2->setReadOnly(true);
         const QString send_message = ui->text2->toPlainText();
-         client.sendRequest(send_message);
-         ui->text1->append(
-             "request:\n" + send_message + "\n"
-             );
-         ui->text2->clear();
+        client.sendRequest(send_message);
+        ui->text2->clear();
     });
 
     QObject::connect(&client, &DeepSeekClient::get_message,[&](const QString& message) {
-        ui->text1->append(
-            "message:\n" + message + "\n"
-            );
+        ui->text1->setMarkdown(message);
         setWindowTitle("可发送消息");
         ui->text2->setReadOnly(false);
     });
