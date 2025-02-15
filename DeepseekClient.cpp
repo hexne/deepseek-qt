@@ -25,24 +25,22 @@ DeepSeekClient::DeepSeekClient(QObject* parent) : QObject(parent) {
 
     manager_ = new QNetworkAccessManager(this);
     connect(manager_, &QNetworkAccessManager::finished, this, &DeepSeekClient::onRequestFinished);
+
+    json_["model"] = "deepseek-chat";
+    json_["stream"] = false;
 }
 
 void DeepSeekClient::sendRequest(const QString& message) {
-    // 构造请求 URL
+    QJsonObject obj;
+    obj["role"] = "user";
+    obj["content"] = message;
+    json_array_.append(obj);
 
-    // 构造请求体
-    QJsonObject requestBody;
-    requestBody["model"] = "deepseek-chat";
-    QJsonArray messages;
-    QJsonObject messageObject;
-    messageObject["role"] = "user";
-    messageObject["content"] = message;
-    messages.append(messageObject);
-    requestBody["messages"] = messages;
-    requestBody["stream"] = false;
+    json_["messages"] = json_array_;
 
-    QJsonDocument doc(requestBody);
+    QJsonDocument doc(json_);
     QByteArray data = doc.toJson();
+    qDebug() << doc;
 
     // 发送 POST 请求
     manager_->post(request_, data);
