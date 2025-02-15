@@ -1,0 +1,7 @@
+cmake-build-debug/
+cmake-build-realse/
+.idea/
+.vs/
+out/
+CMakePresets.json
+CMakeUserPresets.json
