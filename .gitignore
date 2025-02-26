@@ -5,6 +5,5 @@ cmake-build-realse/
 out/
 CMakePresets.json
 CMakeUserPresets.json
-config.json
 
 deepseek_qt
