@@ -1,4 +1,5 @@
 {
   "model": "deepseek-chat",
-  "stream": false
+  "stream": false,
+  "api_key": "<Your Api Key>"
 }
