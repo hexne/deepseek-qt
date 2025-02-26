@@ -12,11 +12,6 @@
 #include <iostream>
 
 DeepSeekClient::DeepSeekClient(QObject* parent) : QObject(parent) {
-    QFile file("./api_key.txt");
-    if (!file.open(QIODevice::ReadOnly)) {
-        throw std::runtime_error("Failed to open file");
-    }
-    api_key_ = file.readAll();
 
     QFile config_file("./config.json");
     if (!config_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -26,13 +21,15 @@ DeepSeekClient::DeepSeekClient(QObject* parent) : QObject(parent) {
     QJsonParseError parseError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(config_json_data, &parseError);
     QJsonObject config_json = jsonDoc.object();
+    config_.api_key = config_json["api_key"].toString();
     config_.model = config_json["model"].toString();
     config_.stream = config_json["stream"].toBool();
+
 
     QUrl url("https://api.deepseek.com/chat/completions");
     request_.setUrl(url);
     request_.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    request_.setRawHeader("Authorization", ("Bearer " + api_key_).toUtf8());
+    request_.setRawHeader("Authorization", ("Bearer " + config_.api_key).toUtf8());
 
     manager_ = new QNetworkAccessManager(this);
     connect(manager_, &QNetworkAccessManager::finished, this, &DeepSeekClient::onRequestFinished);

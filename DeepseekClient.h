@@ -28,7 +28,6 @@ private slots:
     void onRequestFinished(QNetworkReply* reply);
 
 private:
-    QString api_key_;
     QJsonObject json_;
     QJsonArray json_array_;
     QNetworkRequest request_;
@@ -36,6 +35,7 @@ private:
 
     struct Config {
         QString model{};
+        QString api_key{};
         bool stream{};
     } config_;
 };
