@@ -33,4 +33,9 @@ private:
     QJsonArray json_array_;
     QNetworkRequest request_;
     QNetworkAccessManager* manager_;
+
+    struct Config {
+        QString model{};
+        bool stream{};
+    } config_;
 };

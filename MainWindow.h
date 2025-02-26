@@ -12,6 +12,10 @@ QT_END_NAMESPACE
 
 
 
+struct Config {
+    bool stream{};
+    std::string model{};
+};
 
 class MainWindow : public QWidget
 {
