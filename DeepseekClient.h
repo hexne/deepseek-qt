@@ -21,7 +21,7 @@ public:
     void send(const QString& message);
 
 signals:
-    void get_message(const QString& message);
+    void get_message(const QString& message, const QString& response_content);
 
 private slots:
 
